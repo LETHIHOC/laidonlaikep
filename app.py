@@ -1,5 +1,5 @@
 import streamlit as st
-st.image("https://drive.google.com/uc?export=view&id=1MMMMX6BumwsMPbzRT8gZKVtI9VVKhfgx",width=250)
+st.image("https://github.com/LETHIHOC/laidonlaikep/blob/main/1781888688474_269653485332215076_7657796446612170719_a27d91ccef475fe90505bccad974295c.jpg",width=250)
 # Tiêu đề ứng dụng
 st.title("💰 TÍNH TIỀN GỬI TIẾT KIỆM_Lê Thị Học")
 
