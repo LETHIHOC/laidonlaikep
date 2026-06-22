@@ -1,0 +1,91 @@
+import streamlit as st
+
+# Giữ nguyên ảnh hiển thị đầu trang của bạn
+st.image("1781888688474_269653485332215076_7657796446612170719_a27d91ccef475fe90505bccad974295c.jpg")
+
+# Tiêu đề ứng dụng đổi sang tính Thuế TNCN
+st.title("💰 TÍNH THUẾ THU NHẬP CÁ NHÂN & LƯƠNG NET_Lê Thị Học")
+
+# Hàm tính thuế TNCN theo biểu thuế lũy tiến từng phần mới nhất
+def tinh_thue_tncn(thu_nhap_tinh_thue):
+    if thu_nhap_tinh_thue <= 0:
+        return 0
+    elif thu_nhap_tinh_thue <= 5000000:
+        return thu_nhap_tinh_thue * 0.05
+    elif thu_nhap_tinh_thue <= 10000000:
+        return thu_nhap_tinh_thue * 0.1 - 250000
+    elif thu_nhap_tinh_thue <= 18000000:
+        return thu_nhap_tinh_thue * 0.15 - 750000
+    elif thu_nhap_tinh_thue <= 32000000:
+        return thu_nhap_tinh_thue * 0.2 - 1650000
+    elif thu_nhap_tinh_thue <= 52000000:
+        return thu_nhap_tinh_thue * 0.25 - 3250000
+    elif thu_nhap_tinh_thue <= 80000000:
+        return thu_nhap_tinh_thue * 0.3 - 5850000
+    else:
+        return thu_nhap_tinh_thue * 0.35 - 9850000
+
+# Khối nhập dữ liệu đầu vào (Đơn vị: Triệu đồng để đồng nhất với bài cũ của bạn)
+st.subheader("Nhập thông tin thu nhập")
+
+luong_gross = st.number_input(
+    "Nhập tổng thu nhập/Lương Gross (triệu đồng/tháng)",
+    min_value=0.0,
+    value=25.0,
+    step=1.0
+)
+
+so_nguoi_phu_thuoc = st.number_input(
+    "Nhập số người phụ thuộc (người)",
+    min_value=0,
+    value=0,
+    step=1
+)
+
+# Nút tính toán
+if st.button("Tính toán"):
+    
+    # Quy đổi từ triệu đồng sang đồng để tính toán chính xác
+    gross_vnd = luong_gross * 1000000
+    
+    # 1. Tính bảo hiểm bắt buộc (10.5% bao gồm: 8% BHXH, 1.5% BHYT, 1% BHTN)
+    # Giả định đóng trên mức lương Gross thực tế
+    bao_hiem_vnd = gross_vnd * 0.105
+    
+    # 2. Các khoản giảm trừ gia cảnh (Theo quy định: Bản thân 11 triệu, phụ thuộc 4.4 triệu/người)
+    giam_tru_ban_than = 11000000
+    giam_tru_phu_thuoc = so_nguoi_phu_thuoc * 4400000
+    
+    # 3. Tính thu nhập chịu thuế và thu nhập tính thuế
+    thu_nhap_tinh_thue_vnd = gross_vnd - bao_hiem_vnd - giam_tru_ban_than - giam_tru_phu_thuoc
+    # Nếu thu nhập tính thuế âm thì coi như bằng 0 (không phải nộp thuế)
+    thu_nhap_tinh_thue_vnd = max(0.0, thu_nhap_tinh_thue_vnd)
+    
+    # 4. Gọi hàm tính thuế TNCN
+    thue_tncn_vnd = tinh_thue_tncn(thu_nhap_tinh_thue_vnd)
+    
+    # 5. Tính lương NET nhận được thực tế
+    net_vnd = gross_vnd - bao_hiem_vnd - thue_tncn_vnd
+    
+    # Quy đổi ngược lại thành triệu đồng để hiển thị lên màn hình
+    bao_hiem_trieu = bao_hiem_vnd / 1000000
+    thu_nhap_tinh_thue_trieu = thu_nhap_tinh_thue_vnd / 1000000
+    thue_tncn_trieu = thue_tncn_vnd / 1000000
+    net_trieu = net_vnd / 1000000
+
+    # Hiển thị kết quả
+    st.success("Kết quả tính toán (Tạm tính)")
+    
+    st.write(
+        f"📌 Tiền đóng bảo hiểm bắt buộc (10.5%): **{bao_hiem_trieu:,.2f} triệu đồng**"
+    )
+    st.write(
+        f"📌 Thu nhập chịu thuế sau giảm trừ: **{thu_nhap_tinh_thue_trieu:,.2f} triệu đồng**"
+    )
+    st.write(
+        f"📌 Thuế thu nhập cá nhân (TNCN) phải nộp: **{thue_tncn_trieu:,.2f} triệu đồng**"
+    )
+    
+    st.info(
+        f"💰 **Số tiền NET thực nhận cuối cùng: {net_trieu:,.2f} triệu đồng**"
+    )
