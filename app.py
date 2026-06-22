@@ -1,5 +1,4 @@
  import streamlit as st
-# Ảnh đại diện
 st.image("1781888688474_269653485332215076_7657796446612170719_a27d91ccef475fe90505bccad974295c.jpg")
 
 # Tiêu đề ứng dụng
